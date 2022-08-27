@@ -1,31 +1,30 @@
 pipeline {
     agent any
     tools {
-          maven 'maven home'
-        }
-
+        maven 'MAVEN_HOME'
+    }
     stages {
         stage('SCM-Checkout') {
             steps {
-                git branch: 'main', credentialsId: 'git-credentials', 
-                url: 'https://github.com/vikas99341/tomcat-demo.git'
+                git branch: 'main', credentialsId: 'git-credentials',
+                url: 'https://github.com/Asadjunaidshams/tomcat-demo.git'
             }
         }
-        stage('Clean-Compile') {
+		stage('Maven clean-compile') {
             steps {
-                sh 'mvn clean compile'
+                sh "mvn clean compile"
             }
         }
-        stage('Package') {
+		stage('Maven package') {
             steps {
-                sh 'mvn package'
+                sh "mvn package"
             }
         }
-        stage('Tomcat-Deployment') {
+		stage('Tomcat Deployment') {
             steps {
-                sshagent(['tomcat-ssh-credentials']) {
-					sh "scp -o StrictHostKeyChecking=no target/tomcat-demo.war ec2-user@172.31.45.219:/opt/tomcat/webapps"
-				}
+				sshagent(['tomcat-credentials']) {
+                sh "scp -o StrictHostKeyChecking=no target/tomcat-demo.war ec2-user@172.31.89.122:/opt/tomcat/webapps"
+                }     
             }
         }
     }
